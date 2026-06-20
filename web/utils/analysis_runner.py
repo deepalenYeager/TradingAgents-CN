@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 
 # 导入日志模块
 from tradingagents.utils.logging_manager import get_logger, get_logger_manager
+from tradingagents.llm_clients.provider_keys import env_key_for_provider
 logger = get_logger('web')
 
 # 添加项目根目录到Python路径
@@ -208,15 +209,17 @@ def run_stock_analysis(stock_symbol, analysis_date, analysts, research_depth, ll
 
     # 验证环境变量
     update_progress("检查环境变量配置...")
-    dashscope_key = os.getenv("DASHSCOPE_API_KEY")
+    provider_key_name = env_key_for_provider(llm_provider)
+    provider_api_key = os.getenv(provider_key_name) if provider_key_name else None
     finnhub_key = os.getenv("FINNHUB_API_KEY")
 
     logger.info(f"环境变量检查:")
-    logger.info(f"  DASHSCOPE_API_KEY: {'已设置' if dashscope_key else '未设置'}")
+    if provider_key_name:
+        logger.info(f"  {provider_key_name}: {'已设置' if provider_api_key else '未设置'}")
     logger.info(f"  FINNHUB_API_KEY: {'已设置' if finnhub_key else '未设置'}")
 
-    if not dashscope_key:
-        raise ValueError("DASHSCOPE_API_KEY 环境变量未设置")
+    if provider_key_name and not provider_api_key:
+        raise ValueError(f"{provider_key_name} 环境变量未设置")
     if not finnhub_key:
         raise ValueError("FINNHUB_API_KEY 环境变量未设置")
 

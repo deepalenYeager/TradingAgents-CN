@@ -23,6 +23,7 @@ from utils.ui_utils import apply_hide_deploy_button_css
 from tradingagents.config.config_manager import (
     config_manager, ModelConfig, PricingConfig
 )
+from tradingagents.config.step_defaults import STEP_MODEL, STEP_PROVIDER
 
 
 def render_config_management():
@@ -396,9 +397,9 @@ def render_system_settings():
     with col1:
         default_provider = st.selectbox(
             "默认供应商",
-            ["step", "dashscope", "openai", "google", "anthropic"],
-            index=["step", "dashscope", "openai", "google", "anthropic"].index(
-                settings.get("default_provider", "step")
+            [STEP_PROVIDER, "dashscope", "openai", "google", "anthropic"],
+            index=[STEP_PROVIDER, "dashscope", "openai", "google", "anthropic"].index(
+                settings.get("default_provider", STEP_PROVIDER)
             ),
             key="settings_default_provider"
         )
@@ -421,7 +422,7 @@ def render_system_settings():
     with col2:
         default_model = st.text_input(
             "默认模型",
-            value=settings.get("default_model", "qwen-turbo"),
+            value=settings.get("default_model", STEP_MODEL),
             key="settings_default_model"
         )
 

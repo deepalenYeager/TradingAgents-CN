@@ -22,6 +22,7 @@ init_logging()
 
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.default_config import DEFAULT_CONFIG
+from tradingagents.config.step_defaults import STEP_MODEL
 from app.services.simple_analysis_service import create_analysis_config, get_provider_by_model_name
 from app.models.analysis import (
     AnalysisParameters, AnalysisResult, AnalysisTask, AnalysisBatch,
@@ -458,9 +459,9 @@ class AnalysisService:
             # 填充分析参数中的模型（若请求未显式提供）
             params = request.parameters or AnalysisParameters()
             if not getattr(params, 'quick_analysis_model', None):
-                params.quick_analysis_model = effective_settings.get("quick_analysis_model", "qwen-turbo")
+                params.quick_analysis_model = effective_settings.get("quick_analysis_model", STEP_MODEL)
             if not getattr(params, 'deep_analysis_model', None):
-                params.deep_analysis_model = effective_settings.get("deep_analysis_model", "qwen-max")
+                params.deep_analysis_model = effective_settings.get("deep_analysis_model", STEP_MODEL)
 
             # 应用系统级并发与可见性超时（若提供）
             try:
@@ -536,9 +537,9 @@ class AnalysisService:
 
             params = request.parameters or AnalysisParameters()
             if not getattr(params, 'quick_analysis_model', None):
-                params.quick_analysis_model = effective_settings.get("quick_analysis_model", "qwen-turbo")
+                params.quick_analysis_model = effective_settings.get("quick_analysis_model", STEP_MODEL)
             if not getattr(params, 'deep_analysis_model', None):
-                params.deep_analysis_model = effective_settings.get("deep_analysis_model", "qwen-max")
+                params.deep_analysis_model = effective_settings.get("deep_analysis_model", STEP_MODEL)
 
             try:
                 self.queue_service.user_concurrent_limit = int(effective_settings.get("max_concurrent_tasks", DEFAULT_USER_CONCURRENT_LIMIT))

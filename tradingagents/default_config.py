@@ -1,5 +1,7 @@
 import os
 
+from tradingagents.config.step_defaults import STEP_MODEL, STEP_PROVIDER, get_step_base_url
+
 DEFAULT_CONFIG = {
     "project_dir": os.path.abspath(os.path.join(os.path.dirname(__file__), ".")),
     "results_dir": os.getenv("TRADINGAGENTS_RESULTS_DIR", "./results"),
@@ -9,10 +11,10 @@ DEFAULT_CONFIG = {
         "dataflows/data_cache",
     ),
     # LLM settings
-    "llm_provider": "step",
-    "deep_think_llm": "step-3.7-flash",
-    "quick_think_llm": "step-3.7-flash",
-    "backend_url": "https://api.stepfun.com/step_plan/v1",
+    "llm_provider": STEP_PROVIDER,
+    "deep_think_llm": STEP_MODEL,
+    "quick_think_llm": STEP_MODEL,
+    "backend_url": get_step_base_url(),
     # Debate and discussion settings
     "max_debate_rounds": 1,
     "max_risk_discuss_rounds": 1,

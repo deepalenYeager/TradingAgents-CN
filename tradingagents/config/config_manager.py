@@ -40,6 +40,7 @@ logger = get_logger('agents')
 
 # 导入数据模型（避免循环导入）
 from .usage_models import UsageRecord, ModelConfig, PricingConfig
+from .step_defaults import STEP_MODEL, STEP_PROVIDER
 
 try:
     from .mongodb_storage import MongoDBStorage
@@ -201,8 +202,8 @@ class ConfigManager:
         if not self.models_file.exists():
             default_models = [
                 ModelConfig(
-                    provider="step",
-                    model_name="step-3.7-flash",
+                    provider=STEP_PROVIDER,
+                    model_name=STEP_MODEL,
                     api_key="",
                     max_tokens=8000,
                     temperature=0.7
@@ -262,7 +263,7 @@ class ConfigManager:
         if not self.pricing_file.exists():
             default_pricing = [
                 # 阶跃星辰定价 (人民币)
-                PricingConfig("step", "step-3.7-flash", 0.001, 0.002, "CNY"),
+                PricingConfig(STEP_PROVIDER, STEP_MODEL, 0.001, 0.002, "CNY"),
                 
                 # 阿里百炼定价 (人民币)
                 PricingConfig("dashscope", "qwen-turbo", 0.002, 0.006, "CNY"),
@@ -297,8 +298,8 @@ class ConfigManager:
             default_data_dir = os.path.join(os.path.expanduser("~"), "Documents", "TradingAgents", "data")
             
             default_settings = {
-                "default_provider": "step",
-                "default_model": "step-3.7-flash",
+                "default_provider": STEP_PROVIDER,
+                "default_model": STEP_MODEL,
                 "enable_cost_tracking": True,
                 "cost_alert_threshold": 100.0,  # 成本警告阈值
                 "currency_preference": "CNY",
@@ -484,8 +485,8 @@ class ConfigManager:
             else:
                 # 如果设置文件不存在，创建默认设置
                 settings = {
-                    "default_provider": "dashscope",
-                    "default_model": "qwen-turbo",
+                    "default_provider": STEP_PROVIDER,
+                    "default_model": STEP_MODEL,
                     "enable_cost_tracking": True,
                     "cost_alert_threshold": 100.0,
                     "currency_preference": "CNY",

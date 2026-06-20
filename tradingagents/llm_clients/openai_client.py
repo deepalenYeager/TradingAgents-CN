@@ -5,6 +5,11 @@ from langchain_openai import ChatOpenAI
 
 from .base_client import BaseLLMClient, normalize_content
 from .validators import validate_model
+from tradingagents.config.step_defaults import (
+    STEP_BASE_URL,
+    STEP_PROVIDER,
+    get_step_base_url,
+)
 
 
 class NormalizedChatOpenAI(ChatOpenAI):
@@ -31,7 +36,7 @@ _PROVIDER_CONFIG = {
     "qianfan": ("https://qianfan.baidubce.com/v2", "QIANFAN_API_KEY"),
     "openrouter": ("https://openrouter.ai/api/v1", "OPENROUTER_API_KEY"),
     "aihubmix": ("https://aihubmix.com/v1", "AIHUBMIX_API_KEY"),
-    "step": ("https://api.stepfun.com/step_plan/v1", "STEP_API_KEY"),
+    STEP_PROVIDER: (STEP_BASE_URL, "STEP_API_KEY"),
     "ollama": ("http://localhost:11434/v1", None),
     "custom_openai": (None, "CUSTOM_OPENAI_API_KEY"),
 }
@@ -56,6 +61,8 @@ class OpenAIClient(BaseLLMClient):
 
         if self.provider in _PROVIDER_CONFIG:
             default_base_url, api_key_env = _PROVIDER_CONFIG[self.provider]
+            if self.provider == STEP_PROVIDER:
+                default_base_url = get_step_base_url()
             llm_kwargs["base_url"] = self.base_url or default_base_url
             if api_key_env:
                 api_key = self.kwargs.get("api_key") or os.environ.get(api_key_env)

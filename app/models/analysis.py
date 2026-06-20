@@ -9,6 +9,7 @@ from enum import Enum
 from bson import ObjectId
 from .user import PyObjectId
 from app.utils.timezone import now_tz
+from tradingagents.config.step_defaults import STEP_MODEL
 
 
 class AnalysisStatus(str, Enum):
@@ -49,8 +50,8 @@ class AnalysisParameters(BaseModel):
     include_risk: bool = True
     language: str = "zh-CN"
     # 模型配置
-    quick_analysis_model: Optional[str] = "qwen-turbo"
-    deep_analysis_model: Optional[str] = "qwen-max"
+    quick_analysis_model: Optional[str] = STEP_MODEL
+    deep_analysis_model: Optional[str] = STEP_MODEL
 
 
 class AnalysisResult(BaseModel):

@@ -20,6 +20,14 @@ from app.models.config import (
     MarketCategory, DataSourceGrouping, ModelCatalog, ModelInfo
 )
 from tradingagents.llm_clients.provider_keys import canonical_aliases, normalize_provider_key
+from tradingagents.config.step_defaults import (
+    STEP_BASE_URL,
+    STEP_MODEL,
+    STEP_PROVIDER,
+    get_connection_test_model,
+    get_step_base_url,
+)
+from tradingagents.tushare_utils import apply_tushare_api_url
 
 logger = logging.getLogger(__name__)
 
@@ -428,6 +436,16 @@ class ConfigService:
             config_type="system",
             llm_configs=[
                 LLMConfig(
+                    provider=ModelProvider.STEP,
+                    model_name=STEP_MODEL,
+                    api_key="",
+                    api_base=get_step_base_url(),
+                    max_tokens=8000,
+                    temperature=0.7,
+                    enabled=True,
+                    description="阶跃星辰 Step 3.7 Flash 模型"
+                ),
+                LLMConfig(
                     provider=ModelProvider.OPENAI,
                     model_name="gpt-3.5-turbo",
                     api_key="your-openai-api-key",
@@ -444,8 +462,8 @@ class ConfigService:
                     api_base="https://open.bigmodel.cn/api/paas/v4",
                     max_tokens=4000,
                     temperature=0.7,
-                    enabled=True,
-                    description="智谱AI GLM-4模型（推荐）"
+                    enabled=False,
+                    description="智谱AI GLM-4模型"
                 ),
                 LLMConfig(
                     provider=ModelProvider.QWEN,
@@ -458,7 +476,7 @@ class ConfigService:
                     description="阿里云通义千问模型"
                 )
             ],
-            default_llm="glm-4",
+            default_llm=STEP_MODEL,
             data_source_configs=[
                 DataSourceConfig(
                     name="AKShare",
@@ -1291,6 +1309,12 @@ class ConfigService:
                     import tushare as ts
                     ts.set_token(api_key)
                     pro = ts.pro_api()
+                    custom_url_enabled = os.getenv(
+                        "TUSHARE_USE_CUSTOM_URL", "false"
+                    ).lower() in ("true", "1", "yes", "on")
+                    custom_url = os.getenv("TUSHARE_API_URL", "")
+                    if apply_tushare_api_url(pro, custom_url, custom_url_enabled):
+                        logger.info(f"🔗 [TEST] Using custom Tushare API URL: {custom_url.strip()}")
                     # 获取交易日历（轻量级测试）
                     df = pro.trade_cal(exchange='SSE', start_date='20240101', end_date='20240101')
 
@@ -2421,6 +2445,18 @@ class ConfigService:
         """获取默认模型目录数据"""
         return [
             {
+                "provider": STEP_PROVIDER,
+                "provider_name": "阶跃星辰",
+                "models": [
+                    {
+                        "name": STEP_MODEL,
+                        "display_name": "Step 3.7 Flash",
+                        "description": "面向 Agent 场景的高效率模型",
+                        "capabilities": ["function_calling", "vision"]
+                    }
+                ]
+            },
+            {
                 "provider": "qwen",
                 "provider_name": "通义千问",
                 "models": [
@@ -3234,12 +3270,12 @@ class ConfigService:
                     "supported_features": ["chat", "completion", "function_calling", "streaming"]
                 },
                 {
-                    "name": "step",
+                    "name": STEP_PROVIDER,
                     "display_name": "阶跃星辰",
                     "description": "阶跃星辰StepFun提供大语言模型服务",
                     "website": "https://platform.stepfun.com",
                     "api_doc_url": "https://platform.stepfun.com/docs",
-                    "default_base_url": "https://api.stepfun.com/step_plan/v1",
+                    "default_base_url": get_step_base_url(),
                     "supported_features": ["chat", "completion", "function_calling", "streaming"]
                 }
             ]
@@ -3411,9 +3447,9 @@ class ConfigService:
                 return await asyncio.get_event_loop().run_in_executor(None, self._test_anthropic_api, api_key, display_name)
             elif provider_name == "qianfan":
                 return await asyncio.get_event_loop().run_in_executor(None, self._test_qianfan_api, api_key, display_name)
-            elif provider_name == "step":
+            elif provider_name == STEP_PROVIDER:
                 return await asyncio.get_event_loop().run_in_executor(
-                    None, self._test_openai_compatible_api, api_key, display_name, "https://api.stepfun.com/step_plan/v1", provider_name
+                    None, self._test_openai_compatible_api, api_key, display_name, get_step_base_url(), provider_name
                 )
             else:
                 # 🔧 对于未知的自定义厂家，使用 OpenAI 兼容 API 测试
@@ -4629,15 +4665,13 @@ class ConfigService:
             }
 
             # 🔥 根据不同厂家选择合适的测试模型
-            test_model = "gpt-3.5-turbo"  # 默认模型
+            test_model = get_connection_test_model(provider_name)
             if provider_name == "siliconflow":
-                # 硅基流动使用免费的 Qwen 模型进行测试
-                test_model = "Qwen/Qwen2.5-7B-Instruct"
                 logger.info(f"🔍 硅基流动使用测试模型: {test_model}")
             elif provider_name == "zhipu":
-                # 智谱AI使用 glm-4 模型进行测试
-                test_model = "glm-4"
                 logger.info(f"🔍 智谱AI使用测试模型: {test_model}")
+            elif provider_name == STEP_PROVIDER:
+                logger.info(f"🔍 阶跃星辰使用测试模型: {test_model}")
 
             # 使用一个通用的模型名称进行测试
             # 聚合渠道通常支持多种模型，这里使用 gpt-3.5-turbo 作为测试

@@ -10,6 +10,7 @@ import logging
 
 from ..base_provider import BaseStockDataProvider
 from tradingagents.config.providers_config import get_provider_config
+from tradingagents.tushare_utils import apply_tushare_api_url
 
 # 尝试导入tushare
 try:
@@ -88,10 +89,12 @@ class TushareProvider(BaseStockDataProvider):
     def _apply_custom_url(self, api_obj) -> None:
         """如果配置了自定义 API 地址，则覆盖 tushare SDK 的默认请求地址"""
         custom_url = self.config.get("api_url", "")
-        use_custom = self.config.get("use_custom_url", False)
-        if use_custom and custom_url:
-            api_obj._DataApi__http_url = custom_url
-            self.logger.info(f"🔗 [自定义API地址] 已设置为: {custom_url}")
+        if apply_tushare_api_url(
+            api_obj,
+            custom_url,
+            self.config.get("use_custom_url", False),
+        ):
+            self.logger.info(f"🔗 [自定义API地址] 已设置为: {custom_url.strip()}")
 
     def connect_sync(self) -> bool:
         """同步连接到Tushare"""
