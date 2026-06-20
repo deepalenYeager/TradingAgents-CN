@@ -29,6 +29,8 @@ class DataSourceConfig:
             "max_retries": self._get_int_env("TUSHARE_MAX_RETRIES", 3),
             "cache_enabled": self._get_bool_env("TUSHARE_CACHE_ENABLED", True),
             "cache_ttl": self._get_int_env("TUSHARE_CACHE_TTL", 3600),
+            "api_url": os.getenv("TUSHARE_API_URL", ""),
+            "use_custom_url": self._get_bool_env("TUSHARE_USE_CUSTOM_URL", False),
         }
         
         # AKShare配置

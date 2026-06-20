@@ -85,6 +85,14 @@ class TushareProvider(BaseStockDataProvider):
 
         return None
 
+    def _apply_custom_url(self, api_obj) -> None:
+        """如果配置了自定义 API 地址，则覆盖 tushare SDK 的默认请求地址"""
+        custom_url = self.config.get("api_url", "")
+        use_custom = self.config.get("use_custom_url", False)
+        if use_custom and custom_url:
+            api_obj._DataApi__http_url = custom_url
+            self.logger.info(f"🔗 [自定义API地址] 已设置为: {custom_url}")
+
     def connect_sync(self) -> bool:
         """同步连接到Tushare"""
         if not TUSHARE_AVAILABLE:
@@ -116,6 +124,7 @@ class TushareProvider(BaseStockDataProvider):
                     self.logger.info(f"🔄 [步骤3] 尝试使用数据库中的 Tushare Token (超时: {test_timeout}秒)...")
                     ts.set_token(db_token)
                     self.api = ts.pro_api()
+                    self._apply_custom_url(self.api)
 
                     # 测试连接 - 直接调用同步方法（不使用 asyncio.run）
                     try:
@@ -142,6 +151,7 @@ class TushareProvider(BaseStockDataProvider):
                     self.logger.info(f"🔄 [步骤4] 尝试使用 .env 中的 Tushare Token (超时: {test_timeout}秒)...")
                     ts.set_token(env_token)
                     self.api = ts.pro_api()
+                    self._apply_custom_url(self.api)
 
                     # 测试连接 - 直接调用同步方法（不使用 asyncio.run）
                     try:
@@ -192,6 +202,7 @@ class TushareProvider(BaseStockDataProvider):
                     self.logger.info(f"🔄 尝试使用数据库中的 Tushare Token (超时: {test_timeout}秒)...")
                     ts.set_token(db_token)
                     self.api = ts.pro_api()
+                    self._apply_custom_url(self.api)
 
                     # 测试连接（异步）- 使用超时
                     try:
@@ -222,6 +233,7 @@ class TushareProvider(BaseStockDataProvider):
                     self.logger.info(f"🔄 尝试使用 .env 中的 Tushare Token (超时: {test_timeout}秒)...")
                     ts.set_token(env_token)
                     self.api = ts.pro_api()
+                    self._apply_custom_url(self.api)
 
                     # 测试连接（异步）- 使用超时
                     try:
