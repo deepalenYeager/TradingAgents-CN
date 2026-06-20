@@ -3232,6 +3232,15 @@ class ConfigService:
                     "api_doc_url": "https://platform.deepseek.com/api-docs",
                     "default_base_url": "https://api.deepseek.com",
                     "supported_features": ["chat", "completion", "function_calling", "streaming"]
+                },
+                {
+                    "name": "step",
+                    "display_name": "阶跃星辰",
+                    "description": "阶跃星辰StepFun提供大语言模型服务",
+                    "website": "https://platform.stepfun.com",
+                    "api_doc_url": "https://platform.stepfun.com/docs",
+                    "default_base_url": "https://api.stepfun.com/step_plan/v1",
+                    "supported_features": ["chat", "completion", "function_calling", "streaming"]
                 }
             ]
 
@@ -3402,6 +3411,10 @@ class ConfigService:
                 return await asyncio.get_event_loop().run_in_executor(None, self._test_anthropic_api, api_key, display_name)
             elif provider_name == "qianfan":
                 return await asyncio.get_event_loop().run_in_executor(None, self._test_qianfan_api, api_key, display_name)
+            elif provider_name == "step":
+                return await asyncio.get_event_loop().run_in_executor(
+                    None, self._test_openai_compatible_api, api_key, display_name, "https://api.stepfun.com/step_plan/v1", provider_name
+                )
             else:
                 # 🔧 对于未知的自定义厂家，使用 OpenAI 兼容 API 测试
                 logger.info(f"🔍 使用 OpenAI 兼容 API 测试自定义厂家: {provider_name}")

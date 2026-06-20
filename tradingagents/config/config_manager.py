@@ -102,7 +102,8 @@ class ConfigManager:
             "openai": "OPENAI_API_KEY",
             "google": "GOOGLE_API_KEY",
             "anthropic": "ANTHROPIC_API_KEY",
-            "deepseek": "DEEPSEEK_API_KEY"
+            "deepseek": "DEEPSEEK_API_KEY",
+            "step": "STEP_API_KEY",
         }
 
         env_key = env_key_map.get(provider.lower())
@@ -200,18 +201,27 @@ class ConfigManager:
         if not self.models_file.exists():
             default_models = [
                 ModelConfig(
+                    provider="step",
+                    model_name="step-3.7-flash",
+                    api_key="",
+                    max_tokens=8000,
+                    temperature=0.7
+                ),
+                ModelConfig(
                     provider="dashscope",
                     model_name="qwen-turbo",
                     api_key="",
                     max_tokens=4000,
-                    temperature=0.7
+                    temperature=0.7,
+                    enabled=False
                 ),
                 ModelConfig(
                     provider="dashscope",
                     model_name="qwen-plus-latest",
                     api_key="",
                     max_tokens=8000,
-                    temperature=0.7
+                    temperature=0.7,
+                    enabled=False
                 ),
                 ModelConfig(
                     provider="openai",
@@ -251,6 +261,9 @@ class ConfigManager:
         # 默认定价配置
         if not self.pricing_file.exists():
             default_pricing = [
+                # 阶跃星辰定价 (人民币)
+                PricingConfig("step", "step-3.7-flash", 0.001, 0.002, "CNY"),
+                
                 # 阿里百炼定价 (人民币)
                 PricingConfig("dashscope", "qwen-turbo", 0.002, 0.006, "CNY"),
                 PricingConfig("dashscope", "qwen-plus-latest", 0.004, 0.012, "CNY"),
@@ -284,8 +297,8 @@ class ConfigManager:
             default_data_dir = os.path.join(os.path.expanduser("~"), "Documents", "TradingAgents", "data")
             
             default_settings = {
-                "default_provider": "dashscope",
-                "default_model": "qwen-turbo",
+                "default_provider": "step",
+                "default_model": "step-3.7-flash",
                 "enable_cost_tracking": True,
                 "cost_alert_threshold": 100.0,  # 成本警告阈值
                 "currency_preference": "CNY",
@@ -522,6 +535,7 @@ class ConfigManager:
         return {
             "env_file_exists": (Path(__file__).parent.parent.parent / ".env").exists(),
             "api_keys": {
+                "step": bool(os.getenv("STEP_API_KEY")),
                 "dashscope": bool(os.getenv("DASHSCOPE_API_KEY")),
                 "openai": bool(os.getenv("OPENAI_API_KEY")),
                 "google": bool(os.getenv("GOOGLE_API_KEY")),

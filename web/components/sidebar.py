@@ -217,9 +217,10 @@ def render_sidebar():
         # LLM提供商选择
         llm_provider = st.selectbox(
             "LLM提供商",
-            options=["dashscope", "deepseek", "google", "openai", "openrouter", "siliconflow", "custom_openai", "qianfan"],
-            index=["dashscope", "deepseek", "google", "openai", "openrouter", "siliconflow", "custom_openai", "qianfan"].index(st.session_state.llm_provider) if st.session_state.llm_provider in ["dashscope", "deepseek", "google", "openai", "openrouter", "siliconflow", "custom_openai", "qianfan"] else 0,
+            options=["step", "dashscope", "deepseek", "google", "openai", "openrouter", "siliconflow", "custom_openai", "qianfan"],
+            index=["step", "dashscope", "deepseek", "google", "openai", "openrouter", "siliconflow", "custom_openai", "qianfan"].index(st.session_state.llm_provider) if st.session_state.llm_provider in ["step", "dashscope", "deepseek", "google", "openai", "openrouter", "siliconflow", "custom_openai", "qianfan"] else 0,
             format_func=lambda x: {
+                "step": "🌟 阶跃星辰",
                 "dashscope": "🇨🇳 阿里百炼",
                 "deepseek": "🚀 DeepSeek V3",
                 "google": "🌟 Google AI",
@@ -248,7 +249,22 @@ def render_sidebar():
             st.session_state.llm_provider = llm_provider
 
         # 根据提供商显示不同的模型选项
-        if llm_provider == "dashscope":
+        if llm_provider == "step":
+            step_options = ["step-3.7-flash"]
+
+            current_index = 0
+            if st.session_state.llm_model in step_options:
+                current_index = step_options.index(st.session_state.llm_model)
+
+            llm_model = st.selectbox(
+                "选择模型",
+                options=step_options,
+                index=current_index,
+                help="阶跃星辰模型",
+                key="llm_model_select_step"
+            )
+
+        elif llm_provider == "dashscope":
             dashscope_options = ["qwen-turbo", "qwen-plus-latest", "qwen-max"]
 
             # 获取当前选择的索引

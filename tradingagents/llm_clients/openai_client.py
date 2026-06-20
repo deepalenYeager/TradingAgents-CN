@@ -31,6 +31,7 @@ _PROVIDER_CONFIG = {
     "qianfan": ("https://qianfan.baidubce.com/v2", "QIANFAN_API_KEY"),
     "openrouter": ("https://openrouter.ai/api/v1", "OPENROUTER_API_KEY"),
     "aihubmix": ("https://aihubmix.com/v1", "AIHUBMIX_API_KEY"),
+    "step": ("https://api.stepfun.com/step_plan/v1", "STEP_API_KEY"),
     "ollama": ("http://localhost:11434/v1", None),
     "custom_openai": (None, "CUSTOM_OPENAI_API_KEY"),
 }

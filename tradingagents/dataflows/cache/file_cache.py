@@ -88,7 +88,7 @@ class StockDataCache:
         # 内容长度限制配置（文件缓存默认不限制）
         self.content_length_config = {
             'max_content_length': int(os.getenv('MAX_CACHE_CONTENT_LENGTH', '50000')),  # 50K字符
-            'long_text_providers': ['dashscope', 'openai', 'google'],  # 支持长文本的提供商
+            'long_text_providers': ['dashscope', 'openai', 'google', 'step'],  # 支持长文本的提供商
             'enable_length_check': os.getenv('ENABLE_CACHE_LENGTH_CHECK', 'false').lower() == 'true'  # 文件缓存默认不限制
         }
 
@@ -123,7 +123,11 @@ class StockDataCache:
             if openai_key.startswith('sk-') and len(openai_key) >= 40:
                 available_providers.append('openai')
         
-        # 检查Google AI
+        # 检查Step
+        step_key = os.getenv("STEP_API_KEY")
+        if step_key and step_key.strip():
+            available_providers.append('step')
+        
         google_key = os.getenv("GOOGLE_API_KEY")
         if google_key and google_key.strip():
             available_providers.append('google')

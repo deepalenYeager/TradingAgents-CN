@@ -97,7 +97,7 @@ class ErrorFormatter:
         
         if llm_provider or any(keyword in error_lower for keyword in [
             "api key", "api_key", "apikey", "invalid_api_key", "authentication", 
-            "unauthorized", "401", "403", "gemini", "openai", "dashscope", "qianfan", "qwen", "zhipu", "glm"
+            "unauthorized", "401", "403", "gemini", "openai", "dashscope", "qianfan", "qwen", "zhipu", "glm", "stepfun", "step"
         ]):
             # LLM API Key 错误
             if any(keyword in error_lower for keyword in [

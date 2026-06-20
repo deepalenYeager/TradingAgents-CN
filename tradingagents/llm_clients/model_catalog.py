@@ -129,6 +129,16 @@ MODEL_OPTIONS: ProviderModeOptions = {
             ("Custom model ID", "custom"),
         ],
     },
+    "step": {
+        "quick": [
+            ("Step 3.7 Flash - Fast", "step-3.7-flash"),
+            ("Custom model ID", "custom"),
+        ],
+        "deep": [
+            ("Step 3.7 Flash", "step-3.7-flash"),
+            ("Custom model ID", "custom"),
+        ],
+    },
 }
 
 

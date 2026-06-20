@@ -9,10 +9,10 @@ DEFAULT_CONFIG = {
         "dataflows/data_cache",
     ),
     # LLM settings
-    "llm_provider": "openai",
-    "deep_think_llm": "o4-mini",
-    "quick_think_llm": "gpt-4o-mini",
-    "backend_url": "https://api.openai.com/v1",
+    "llm_provider": "step",
+    "deep_think_llm": "step-3.7-flash",
+    "quick_think_llm": "step-3.7-flash",
+    "backend_url": "https://api.stepfun.com/step_plan/v1",
     # Debate and discussion settings
     "max_debate_rounds": 1,
     "max_risk_discuss_rounds": 1,

@@ -21,6 +21,7 @@ _OPENAI_COMPATIBLE = {
     "aihubmix",
     "ollama",
     "custom_openai",
+    "step",
 }
 
 
